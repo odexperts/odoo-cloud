@@ -6,13 +6,15 @@ RUN apt-get update && apt-get upgrade -y
 # Set install dir
 WORKDIR /usr/src/app
 
-# Specify dependencies
+# Install Odoo dependencies
 COPY odoo/requirements.txt ./
-
-# Install Dependencies
 RUN apt-get install -y --no-install-recommends \
   python-dev libsasl2-dev libldap2-dev libssl-dev \
   && pip install --no-cache-dir -r requirements.txt
+
+# Install Addon dependencies
+COPY addons/requirements.txt ./addon-requirements.txt
+RUN pip install --no-cache-dir -r addon-requirements.txt
 
 # Create odoo user and directories and set permissions
 RUN useradd -ms /bin/bash odoo \
@@ -21,6 +23,7 @@ RUN useradd -ms /bin/bash odoo \
 
 # Copy odoo source and config
 COPY odoo ./odoo
+COPY addons /mnt/odoo/addons
 COPY entrypoint.sh ./
 COPY odoo.conf /etc/odoo/
 

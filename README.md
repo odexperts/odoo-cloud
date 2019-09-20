@@ -1,7 +1,7 @@
 # Cloud-Native Odoo
 
 This repository contains the source code for the `odoo-cloud` docker image,
-which is designed to be used as a base of cloud-native, production Odoo
+which is designed to be used as a base image for cloud-native, production Odoo
 deployments.
 
 ## Features
@@ -40,4 +40,4 @@ You can pass any `odoo-bin` args via `run.sh`, e.g.:
 
 ## Contributing
 
-Contributions & Optimisations welcome! Please raise a pull request or issue!
+Contributions & Optimisations welcome! Please raise a pull request or issue.
