@@ -9,8 +9,7 @@ __pycache__/
 # Odoo stuff
 odoo.env
 odoo/
-odoo-addons/
-odoo-data/
+odoo_data/
 
 # OS stuff
 .DS_Store

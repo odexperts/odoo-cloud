@@ -1,13 +1,16 @@
 
+from odoo.tools.func import lazy_property
+from odoo import http, tools
 import sys
 import werkzeug.contrib.sessions
 import redis
 import pickle
+import logging
 
-from odoo import http, tools
-from odoo.tools.func import lazy_property
+log = logging.getLogger(__name__)
 
 SESSION_TIMEOUT = 60 * 60 * 24 * 7  # TODO: make this configurable!
+
 
 class RedisSessionStore(werkzeug.contrib.sessions.SessionStore):
 
@@ -53,9 +56,11 @@ class RedisSessionStore(werkzeug.contrib.sessions.SessionStore):
         except redis.ConnectionError:
             raise redis.ConnectionError('Redis server is not responding')
 
+
 def setup_redis_session_store():
 
     # Patch methods of openerp.http to use Redis instead of filesystem
+    log.info("Using Redis session store.")
 
     def session_gc(session_store):
         # Override to ignore file unlink

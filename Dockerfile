@@ -13,17 +13,17 @@ RUN apt-get install -y --no-install-recommends \
   && pip install --no-cache-dir -r requirements.txt
 
 # Install Addon dependencies
-COPY addons/requirements.txt ./addon-requirements.txt
-RUN pip install --no-cache-dir -r addon-requirements.txt
+COPY cloud_addons/requirements.txt ./cloud-requirements.txt
+RUN pip install --no-cache-dir -r cloud-requirements.txt
 
 # Create odoo user and directories and set permissions
 RUN useradd -ms /bin/bash odoo \
-  && mkdir odoo /etc/odoo /mnt/odoo /mnt/odoo/addons /mnt/odoo/data \
+  && mkdir odoo /etc/odoo /mnt/odoo /mnt/odoo/cloud_addons /mnt/odoo/addons /mnt/odoo/data \
   && chown -R odoo:odoo odoo /etc/odoo /mnt/odoo
 
 # Copy odoo source and config
 COPY odoo ./odoo
-COPY addons /mnt/odoo/addons
+COPY cloud_addons /mnt/odoo/cloud_addons
 COPY entrypoint.sh ./
 COPY odoo.conf /etc/odoo/
 
