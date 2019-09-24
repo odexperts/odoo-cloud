@@ -1,6 +1,7 @@
 
-from . import odoo_patches
+from . import redis_session_store
+from . import attachment_storage
 
 # Apply Odoo Server Patches
-odoo_patches.setup_redis_session_store()
-odoo_patches.setup_db_attachment_storage()
+redis_session_store.setup()
+attachment_storage.setup()

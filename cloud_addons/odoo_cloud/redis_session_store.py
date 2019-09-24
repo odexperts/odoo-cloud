@@ -57,7 +57,7 @@ class RedisSessionStore(werkzeug.contrib.sessions.SessionStore):
             raise redis.ConnectionError('Redis server is not responding')
 
 
-def setup_redis_session_store():
+def setup():
 
     # Patch methods of openerp.http to use Redis instead of filesystem
     log.info("Using Redis session store.")
