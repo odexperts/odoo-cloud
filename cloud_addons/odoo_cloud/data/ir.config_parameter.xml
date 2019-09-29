@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="config_attachment_location" model="ir.config_parameter">
             <field name="key">ir_attachment.location</field>
-            <field name="value">db</field>
+            <field name="value">dblo</field>
         </record>
     </data>
 </odoo>

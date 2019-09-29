@@ -1,11 +1,11 @@
 
-from odoo import api
+from odoo import api, SUPERUSER_ID
 from odoo.addons.base.models.ir_attachment import IrAttachment
-
-# Override IrAttachment._storage function to use "db" as default storage
 
 
 def setup():
+    # Override IrAttachment._storage function to use "db" as default storage
+    # (so we can boot without a filesystem)
 
     @api.model
     def _default_db_storage(self):

@@ -8,7 +8,7 @@ deployments.
 
 * Odoo 12, built from source
 * Redis used for session storage
-* Files stored in PostgreSQL
+* Attachments stored in PostgreSQL Large Objects
 * No writeable filesystem required
 
 ## Building and Running the `odoo-cloud` image
