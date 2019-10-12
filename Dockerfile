@@ -1,15 +1,18 @@
 FROM python:3.7-buster
 
-# Update OS
-RUN apt-get update && apt-get upgrade -y
-
 # Set install dir
 WORKDIR /usr/src/app
 
 # Install Odoo dependencies
 COPY odoo/requirements.txt ./
-RUN apt-get install -y --no-install-recommends \
+RUN set -x; \
+  apt-get update \
+  && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.stretch_amd64.deb \
+  && echo '7e35a63f9db14f93ec7feeb0fce76b30c08f2057 wkhtmltox.deb' | sha1sum -c - \
+  && apt-get install -y --no-install-recommends \
+  ./wkhtmltox.deb \
   python-dev libsasl2-dev libldap2-dev libssl-dev \
+  && rm -rf /var/lib/apt/lists/* wkhtmltox.deb \
   && pip install --no-cache-dir -r requirements.txt
 
 # Install Addon dependencies
@@ -24,8 +27,8 @@ RUN useradd -ms /bin/bash odoo \
 # Copy odoo source and config
 COPY odoo ./odoo
 COPY cloud_addons /mnt/odoo/cloud_addons
-COPY entrypoint.sh ./
-COPY odoo.conf /etc/odoo/
+COPY src/entrypoint.sh ./
+COPY src/odoo.conf /etc/odoo/
 
 # Define runtime configuration
 ENV ODOO_RC /etc/odoo/odoo.conf
