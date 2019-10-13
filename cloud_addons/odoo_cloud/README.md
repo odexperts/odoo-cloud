@@ -17,13 +17,3 @@ atts = env.get('ir.attachment')
 atts.migrate_to_lobject()
 env.cr.commit()
 ```
-
-#### Potential subsequent data-fixes needed
-
-The following fixes might be needed if odoo has not correctly set the MIME-type
-of some migrated website data:
-
-```
-UPDATE ir_attachment SET mimetype = 'application/javascript' where url like '%.js';
-UPDATE ir_attachment SET mimetype = 'text/css' where url like '%.css';
-```

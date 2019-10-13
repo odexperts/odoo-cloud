@@ -101,5 +101,8 @@ class IrAttachment(models.Model):
                 log.info(
                     f'Migrating attachment ID {att.id} ({current_att} of {att_count})...')
                 # re-save data to move to lobject storage
-                att.write({'datas': att.datas})
+                att.write({
+                    'mimetype': att.mimetype,
+                    'datas': att.datas
+                })
                 current_att += 1
