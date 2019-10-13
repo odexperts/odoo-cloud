@@ -34,6 +34,9 @@ You can pass any `odoo-bin` args via `run.sh`, e.g.:
 # Run with a specific database
 ./run.sh odoo -d db_name
 
+# Access the odoo shell for a specific database
+./run.sh odoo-shell -d db_name
+
 # Access bash inside the container
 ./run.sh bash
 ```
