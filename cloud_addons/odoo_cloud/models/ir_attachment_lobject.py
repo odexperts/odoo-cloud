@@ -4,7 +4,8 @@
 
 import logging
 import base64
-from odoo import models, api, SUPERUSER_ID
+from odoo import models, api, SUPERUSER_ID, _
+from odoo.exceptions import AccessError
 import psycopg2
 
 LARGE_OBJECT_LOCATION = 'dblo'
@@ -73,30 +74,32 @@ class IrAttachment(models.Model):
             else:
                 super(IrAttachment, attach)._compute_datas()
 
+    @api.model
+    def migrate_to_lobject(self):
+        """migrates all binary attachments to postgres large object storage"""
+        if not self.env.user._is_admin():
+            raise AccessError(
+                _('Only administrators can execute this action.'))
 
-def migrate_to_lobject(cr, registry):
-    """ post_init_hook to migrate datbase-stored attachments to large objects
-        not currently invoked automatically as it is too slow.
-    """
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    attach_obj = env['ir.attachment']
-    db_atts = attach_obj.search([
-        ('type', '=', 'binary'),
-        ('store_fname', '=', False),
-        # avoid check in ir_attachment._search() that adds extra criteria
-        ('id', '!=', False)
-    ])
+        atts = self.search([
+            '&', '&',
+            ('id', '>', 0),  # bypass filtering of field-attached attachments
+            ('type', '=', 'binary'),
+            '|',
+            ('store_fname', '=', False), ('store_fname', 'not like', 'dblo:%')
+        ])
 
-    att_count = len(db_atts)
-    if att_count:
-        log.info(
-            f'Migrating {att_count} database attachments to Large Objects...')
-        if attach_obj._storage() != LARGE_OBJECT_LOCATION:
-            raise Exception(
-                f'Default storage is not set to Large Object ({LARGE_OBJECT_LOCATION})')
-        current_att = 1
-        for att in db_atts:
-            log.info(f'Migrating attachment {current_att} of {att_count}...')
-            # re-save data to move to lobject storage
-            att.write({'datas': att.datas})
-            current_att += 1
+        att_count = len(atts)
+        if att_count:
+            log.info(
+                f'Migrating {att_count} database attachments to Large Objects...')
+            if self._storage() != LARGE_OBJECT_LOCATION:
+                raise Exception(
+                    f'Default storage is not set to Large Object ({LARGE_OBJECT_LOCATION})')
+            current_att = 1
+            for att in atts:
+                log.info(
+                    f'Migrating attachment ID {att.id} ({current_att} of {att_count})...')
+                # re-save data to move to lobject storage
+                att.write({'datas': att.datas})
+                current_att += 1
