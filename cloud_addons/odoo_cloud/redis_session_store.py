@@ -2,6 +2,7 @@
 from odoo.tools.func import lazy_property
 from odoo import http, tools
 import sys
+import os
 import werkzeug.contrib.sessions
 import redis
 import pickle
@@ -12,6 +13,11 @@ log = logging.getLogger(__name__)
 SESSION_TIMEOUT = 60 * 60 * 24 * 7  # TODO: make this configurable!
 
 
+def get_config(name, default):
+    return os.environ.get(name.upper(),
+                          tools.config.get(name, default))
+
+
 class RedisSessionStore(werkzeug.contrib.sessions.SessionStore):
 
     def __init__(self, *args, **kwargs):
@@ -19,10 +25,10 @@ class RedisSessionStore(werkzeug.contrib.sessions.SessionStore):
         self.expire = kwargs.get('expire', SESSION_TIMEOUT)
         self.key_prefix = kwargs.get('key_prefix', '')
         self.redis = redis.Redis(
-            host=tools.config.get('redis_host', 'host.docker.internal'),
-            port=int(tools.config.get('redis_port', 6379)),
-            db=int(tools.config.get('redis_dbindex', 1)),
-            password=tools.config.get('redis_pass', None))
+            host=get_config('redis_host', 'host.docker.internal'),
+            port=int(get_config('redis_port', 6379)),
+            db=int(get_config('redis_dbindex', 1)),
+            password=get_config('redis_pass', None))
         self._is_redis_server_running()
 
     def save(self, session):
@@ -60,7 +66,8 @@ class RedisSessionStore(werkzeug.contrib.sessions.SessionStore):
 def setup():
 
     # Patch methods of openerp.http to use Redis instead of filesystem
-    log.info("Using Redis session store.")
+    log.info("Using Redis session store. Host: " +
+             str(get_config('redis_host', 'host.docker.internal')))
 
     def session_gc(session_store):
         # Override to ignore file unlink

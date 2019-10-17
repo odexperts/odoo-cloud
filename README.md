@@ -41,6 +41,10 @@ You can pass any `odoo-bin` args via `run.sh`, e.g.:
 ./run.sh bash
 ```
 
+## TODO List
+
+* Redis host from command line parameter
+
 ## Contributing
 
 Contributions & Optimisations welcome! Please raise a pull request or issue.
