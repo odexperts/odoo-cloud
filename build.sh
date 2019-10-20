@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "Building the odoo-cloud image..."
-docker build -t odoo-cloud:12 .
+echo "Building the odoo-cloud:13 image..."
+docker build -t odoo-cloud:13 .
