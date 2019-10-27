@@ -51,7 +51,11 @@ def monkey_patch_ir_attachment():
     def _file_delete(self, fname):
         if self._is_dblo_attachment(fname):
             oid = int(fname[len(LARGE_OBJECT_LOCATION)+1:])
-            return self._lobject(self.env.cr, oid, 'rb').unlink()
+            self.env.cr.execute("SAVEPOINT lobject_delete")
+            try:
+                return self._lobject(self.env.cr, oid, 'rb').unlink()
+            except psycopg2.OperationalError:
+                self.env.cr.execute("ROLLBACK TO SAVEPOINT lobject_delete")
         else:
             return self._orig_file_delete(fname)
     setattr(IrAttachment, '_orig_file_delete', IrAttachment._file_delete)
