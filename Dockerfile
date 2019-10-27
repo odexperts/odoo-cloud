@@ -21,14 +21,17 @@ RUN pip install --no-cache-dir -r cloud-requirements.txt
 
 # Create odoo user and directories and set permissions
 RUN useradd -ms /bin/bash odoo \
-  && mkdir odoo /etc/odoo /mnt/odoo /mnt/odoo/cloud_addons /mnt/odoo/addons /mnt/odoo/data \
+  && mkdir odoo /etc/odoo /mnt/odoo /mnt/odoo/cloud_addons /mnt/odoo/data \
+  /usr/src/app/scripts \
   && chown -R odoo:odoo odoo /etc/odoo /mnt/odoo
 
 # Copy odoo source and config
 COPY odoo ./odoo
 COPY cloud_addons /mnt/odoo/cloud_addons
 COPY src/entrypoint.sh ./
+COPY src/scripts ./scripts
 COPY src/odoo.conf /etc/odoo/
+ENV PATH="/usr/src/app/scripts:${PATH}"
 
 # Define runtime configuration
 ENV ODOO_RC /etc/odoo/odoo.conf
